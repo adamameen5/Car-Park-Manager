@@ -15,7 +15,7 @@ public class BambaCarParkManager implements CarParkManager {
     private double maxCharge = 3000;
     private int addFromthisHour = 3;
 
-    private int totalAvailableSlots = 6;
+    private int totalAvailableSlots = 0;
     private int availableSlots = totalAvailableSlots;
 
     private final int TOTAL_SLOTS_IN_GF = 80; //Total number of slots in ground floor (constant variable)
@@ -26,6 +26,10 @@ public class BambaCarParkManager implements CarParkManager {
 
     private final int TOTAL_SLOTS_IN_SF = 70; //Total number of slots in second floor (constant variable)
     private int availableSlotsInSf = TOTAL_SLOTS_IN_SF; //No of available slots in second floor
+
+    //Initially all slots will be free/empty, therefore totalAvailableSlotsInAllFloors will be equal
+    //to the total slots in all floors
+    private int totalAvailableSlotsInAllFloors = TOTAL_SLOTS_IN_GF + TOTAL_SLOTS_IN_FF + TOTAL_SLOTS_IN_SF;
 
     //Queues to store vehicles parked in each floor
     private Queue<Vehicle> vehiclesInGF = new LinkedList<Vehicle>();
@@ -55,7 +59,7 @@ public class BambaCarParkManager implements CarParkManager {
 
 
     @Override
-    public synchronized void addVehicle(Vehicle obj) {
+    public synchronized void addVehicle(Vehicle obj, String floor) {
 
         //int numOfMotorbikes = 0;
         int numOfMotorbikesCurrentlyParked = 0;
@@ -73,9 +77,9 @@ public class BambaCarParkManager implements CarParkManager {
 
         //this section will control the entry of the vehicles to the carpark
         if (obj instanceof Van || obj instanceof Car) {
-            while ((availableSlotsInGf+availableSlotsInFf+availableSlotsInSf) < 1){
+            while (((availableSlotsInGf) < 1) && (floor.equals("Ground"))){
                 try {
-                    wait(5000);
+                    wait(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -86,9 +90,9 @@ public class BambaCarParkManager implements CarParkManager {
                     numOfMotorbikesCurrentlyParked++;
                 }
             }
-            while (((availableSlotsInGf+availableSlotsInFf) < 1) && ((numOfMotorbikesCurrentlyParked%3) == 0)){
+            while ((availableSlotsInGf < 1) && ((numOfMotorbikesCurrentlyParked%3) == 0)){
                 try {
-                    wait(5000);
+                    wait(1000);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
@@ -162,14 +166,24 @@ public class BambaCarParkManager implements CarParkManager {
                 vehiclesInGF.offer(obj);
                 printVehicleAddedMsg("Ground",obj,availableSlotsInGf);
                 vehicleParked = true;
+            } else if (availableSlotsInGf > 0 && (numOfMotorbikesCurrentlyParkedInGF%3 != 0)){
+                listOfVehicle.add(obj);
+                vehiclesInGF.offer(obj);
+                printVehicleAddedMsg("Ground",obj,availableSlotsInGf);
+                vehicleParked = true;
             } else if (availableSlotsInFf == 0 || (numOfMotorbikesCurrentlyParkedInFF%3 != 0)){
                 listOfVehicle.add(obj);
                 vehiclesInFF.offer(obj);
                 printVehicleAddedMsg("First",obj,availableSlotsInFf);
                 vehicleParked = true;
-            } else if (availableSlotsInFf > 0 || (numOfMotorbikesCurrentlyParkedInFF%3 == 0)){
+            } else if (availableSlotsInFf > 0 && (numOfMotorbikesCurrentlyParkedInFF%3 == 0)){
                 listOfVehicle.add(obj);
                 availableSlotsInFf--;
+                vehiclesInFF.offer(obj);
+                printVehicleAddedMsg("First",obj,availableSlotsInFf);
+                vehicleParked = true;
+            } else if (availableSlotsInFf > 0 && (numOfMotorbikesCurrentlyParkedInFF%3 != 0)){
+                listOfVehicle.add(obj);
                 vehiclesInFF.offer(obj);
                 printVehicleAddedMsg("First",obj,availableSlotsInFf);
                 vehicleParked = true;
@@ -262,15 +276,16 @@ public class BambaCarParkManager implements CarParkManager {
     public synchronized void removeVehicle(String floorLevel){
 
         boolean vehicleRemoved = false;
-        int totalAvailableSlots = availableSlotsInGf + availableSlotsInFf + availableSlotsInSf;
+        int totalAvailableSlotsInAllFloors = availableSlotsInGf + availableSlotsInFf + availableSlotsInSf;
         int TOTAL_SLOTS = TOTAL_SLOTS_IN_GF + TOTAL_SLOTS_IN_FF + TOTAL_SLOTS_IN_SF;
         int numOfMotorbikesCurrentlyParked = 0;
         int bikeListIndex = 0;
         String removedVehicleID = "";
 
-        while (totalAvailableSlots == TOTAL_SLOTS){
+        while (totalAvailableSlotsInAllFloors == TOTAL_SLOTS){
             try {
-                wait(5000);
+                //if there are no vehicles parked in any of the slots, then exit thread has to wait
+                wait(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

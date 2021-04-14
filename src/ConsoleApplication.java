@@ -133,7 +133,7 @@ public class ConsoleApplication {
                 VehicleType.Van : null;
         ObjectCreator creater = new ObjectCreator();
         Vehicle vehicle = creater.createVehicle(type);
-        bambaCarParkManager.addVehicle(vehicle);
+        bambaCarParkManager.addVehicle(vehicle,"Ground");
     }
 
     private static void deleteVehicle() {

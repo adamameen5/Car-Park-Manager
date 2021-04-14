@@ -7,7 +7,7 @@ public interface CarParkManager {
 	
 	public static final int MAX=20; //Number of slots available in the Car Park
 	
-	public void addVehicle(Vehicle obj);
+	public void addVehicle(Vehicle obj, String floor);
 	public void deleteVehicle(String IdPlate);
 	public void printcurrentVehicles();
 	public void printVehiclePercentage();

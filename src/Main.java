@@ -13,9 +13,10 @@ public class Main {
         Queue<Vehicle> vanQueue = bambaCarParkManager.getVanQueue();
         Queue<Vehicle> motorbikeQueue = bambaCarParkManager.getMotorbikeQueue();
 
+        //Get current system date and time
         DateTime dateTime = new DateTime(2020,3,20,10,10,10);
 
-        //Creating car objects
+        //Creating car objects and adding them to the queue to be parked
         Car car1 = new Car("car-1111","Honda","Fit",dateTime,4, Color.BLUE);
         Car car2 = new Car("car-2222","Toyota","Camry",dateTime,4, Color.CYAN);
         Car car3 = new Car("car-3333","Benz","MG",dateTime,4, Color.DARK_GRAY);
@@ -27,7 +28,7 @@ public class Main {
         carQueue.offer(car4);
         carQueue.offer(car5);
 
-        //Creating van objects
+        //Creating van objects and adding them to the queue to be parked
         Van van1 = new Van("van-1111","Toyota","KDH",dateTime,30.0);
         Van van2 = new Van("van-2222","Nissan","KMKH",dateTime,60.0);
         Van van3 = new Van("van-3333","Nissan","KMKH",dateTime,60.0);
@@ -41,18 +42,18 @@ public class Main {
         vanQueue.offer(van5);
         vanQueue.offer(van6);
 
-        //Creating motorbike objects
+        //Creating motorbike objects and adding them to the queue to be parked
         MotorBike mbk1 = new MotorBike("mbk-1111","Yamaha","FZ",dateTime,"500cc");
-//        MotorBike mbk2 = new MotorBike("mbk-2222","Honda","Dio",dateTime,"110cc");
+        MotorBike mbk2 = new MotorBike("mbk-2222","Honda","Dio",dateTime,"110cc");
         motorbikeQueue.offer(mbk1);
-//        motorbikeQueue.offer(mbk2);
+        motorbikeQueue.offer(mbk2);
 
         //Creating the threads for concurrent programming (departure and arrival)
-        Runnable arrival = new Arrival(bambaCarParkManager,carQueue,vanQueue,motorbikeQueue);
-        Runnable departure = new Departure(bambaCarParkManager);
+        Runnable arrival = new Arrival(bambaCarParkManager,"Ground",carQueue,vanQueue,motorbikeQueue);
+        Runnable departure = new Departure(bambaCarParkManager,"Ground", (carQueue.size() + vanQueue.size() + motorbikeQueue.size()));
 
         /*
-        Creating a thread group for ground floor
+        Creating a thread group for the ground floor
          TODO
         */
         ThreadGroup threadForGroundFlr = new ThreadGroup("Ground");
