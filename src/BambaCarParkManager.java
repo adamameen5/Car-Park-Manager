@@ -19,7 +19,7 @@ public class BambaCarParkManager implements CarParkManager {
     private int availableSlots = totalAvailableSlots;
 
     private final int TOTAL_SLOTS_IN_GF = 80; //Total number of slots in ground floor (constant variable)
-    private int availableSlotsInGf = TOTAL_SLOTS_IN_GF; //No of available slots in ground floor
+    private int availableSlotsInGf = TOTAL_SLOTS_IN_GF; //No. of available slots in ground floor
 
     private final int TOTAL_SLOTS_IN_FF = 60; //Total number of slots in first floor (constant variable)
     private int availableSlotsInFf = TOTAL_SLOTS_IN_FF; //No of available slots in first floor
@@ -57,7 +57,9 @@ public class BambaCarParkManager implements CarParkManager {
         return instance;
     }
 
-
+    /*
+     * This method will park a vehicle in the queue at a parking slot
+     */
     @Override
     public synchronized void addVehicle(Vehicle obj, String floor) {
 
@@ -76,132 +78,193 @@ public class BambaCarParkManager implements CarParkManager {
         }*/
 
         //this section will control the entry of the vehicles to the carpark
-        if (obj instanceof Van || obj instanceof Car) {
-            while (((availableSlotsInGf) < 1) && (floor.equals("Ground"))){
-                try {
-                    wait(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        if (floor.equals("Second")) {
+            if (obj instanceof Car) {
+                while ((availableSlotsInSf) < 1) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (obj instanceof Van) {
+                while ((availableSlotsInSf) < 2) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-        } else {
-            for (Vehicle item : listOfVehicle) {
-                if (item instanceof MotorBike) {
-                    numOfMotorbikesCurrentlyParked++;
+        } else if (floor.equals("First")) {
+            if (obj instanceof Car) {
+                while ((availableSlotsInFf) < 1) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (obj instanceof Van) {
+                while ((availableSlotsInFf) < 2) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                for (Vehicle item : listOfVehicle) {
+                    if (item instanceof MotorBike) {
+                        numOfMotorbikesCurrentlyParked++;
+                    }
+                }
+                while ((availableSlotsInFf < 1) && ((numOfMotorbikesCurrentlyParked % 3) == 0)) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
-            while ((availableSlotsInGf < 1) && ((numOfMotorbikesCurrentlyParked%3) == 0)){
-                try {
-                    wait(1000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        } else if (floor.equals("Ground")) {
+            if (obj instanceof Car) {
+                while ((availableSlotsInGf) < 1) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else if (obj instanceof Van) {
+                while ((availableSlotsInGf) < 2) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                for (Vehicle item : listOfVehicle) {
+                    if (item instanceof MotorBike) {
+                        numOfMotorbikesCurrentlyParked++;
+                    }
+                }
+                while ((availableSlotsInGf < 1) && ((numOfMotorbikesCurrentlyParked % 3) == 0)) {
+                    try {
+                        wait(1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
+
 
         //This is where the vehicle is added to a parking lot
         if (obj instanceof Van) {
-                if (availableSlotsInGf >= 2){
-                    listOfVehicle.add(obj);
-                    availableSlotsInGf -= 2;
-                    vehiclesInGF.offer(obj);
-                    printVehicleAddedMsg("Ground",obj,availableSlotsInGf);
-                    vehicleParked = true;
-                } else if (availableSlotsInFf >= 2){
-                    listOfVehicle.add(obj);
-                    availableSlotsInFf -= 2;
-                    vehiclesInFF.offer(obj);
-                    printVehicleAddedMsg("First",obj,availableSlotsInFf);
-                    vehicleParked = true;
-                } else if (availableSlotsInSf >= 2){
-                    listOfVehicle.add(obj);
-                    availableSlotsInSf -= 2;
-                    vehiclesInSF.offer(obj);
-                    printVehicleAddedMsg("Second",obj,availableSlotsInSf);
-                    vehicleParked = true;
-                }
+            if (availableSlotsInGf >= 2) {
+                listOfVehicle.add(obj);
+                availableSlotsInGf -= 2;
+                vehiclesInGF.offer(obj);
+                printVehicleAddedMsg("Ground", obj, availableSlotsInGf);
+                vehicleParked = true;
+            } else if (availableSlotsInFf >= 2) {
+                listOfVehicle.add(obj);
+                availableSlotsInFf -= 2;
+                vehiclesInFF.offer(obj);
+                printVehicleAddedMsg("First", obj, availableSlotsInFf);
+                vehicleParked = true;
+            } else if (availableSlotsInSf >= 2) {
+                listOfVehicle.add(obj);
+                availableSlotsInSf -= 2;
+                vehiclesInSF.offer(obj);
+                printVehicleAddedMsg("Second", obj, availableSlotsInSf);
+                vehicleParked = true;
+            }
         }
 
         if (obj instanceof Car) {
-            if (availableSlotsInGf >= 1){
+            if (availableSlotsInGf >= 1) {
                 listOfVehicle.add(obj);
-                availableSlotsInGf --;
+                availableSlotsInGf--;
                 vehiclesInGF.offer(obj);
-                printVehicleAddedMsg("Ground",obj,availableSlotsInGf);
+                printVehicleAddedMsg("Ground", obj, availableSlotsInGf);
                 vehicleParked = true;
-            } else if (availableSlotsInFf >= 1){
+            } else if (availableSlotsInFf >= 1) {
                 listOfVehicle.add(obj);
-                availableSlotsInFf --;
+                availableSlotsInFf--;
                 vehiclesInFF.offer(obj);
-                printVehicleAddedMsg("First",obj,availableSlotsInFf);
+                printVehicleAddedMsg("First", obj, availableSlotsInFf);
                 vehicleParked = true;
-            } else if (availableSlotsInSf >= 1){
+            } else if (availableSlotsInSf >= 1) {
                 listOfVehicle.add(obj);
-                availableSlotsInSf --;
+                availableSlotsInSf--;
                 vehiclesInSF.offer(obj);
-                printVehicleAddedMsg("Second",obj,availableSlotsInSf);
+                printVehicleAddedMsg("Second", obj, availableSlotsInSf);
                 vehicleParked = true;
             }
         }
 
         if (obj instanceof MotorBike) {
-            for (Vehicle vehicle:vehiclesInGF){
-                if(vehicle instanceof MotorBike){
+            for (Vehicle vehicle : vehiclesInGF) {
+                if (vehicle instanceof MotorBike) {
                     numOfMotorbikesCurrentlyParkedInGF++;
                 }
             }
-            for (Vehicle vehicle:vehiclesInFF){
-                if(vehicle instanceof MotorBike){
+            for (Vehicle vehicle : vehiclesInFF) {
+                if (vehicle instanceof MotorBike) {
                     numOfMotorbikesCurrentlyParkedInFF++;
                 }
             }
-            if (availableSlotsInGf == 0 && (numOfMotorbikesCurrentlyParkedInGF%3 != 0)){
+            if (availableSlotsInGf == 0 && (numOfMotorbikesCurrentlyParkedInGF % 3 != 0)) {
                 listOfVehicle.add(obj);
                 vehiclesInGF.offer(obj);
-                printVehicleAddedMsg("Ground",obj,availableSlotsInGf);
+                printVehicleAddedMsg("Ground", obj, availableSlotsInGf);
                 vehicleParked = true;
-            } else if (availableSlotsInGf > 0 && (numOfMotorbikesCurrentlyParkedInGF%3 == 0)){
+            } else if (availableSlotsInGf > 0 && (numOfMotorbikesCurrentlyParkedInGF % 3 == 0)) {
                 listOfVehicle.add(obj);
-                availableSlotsInGf --;
+                availableSlotsInGf--;
                 vehiclesInGF.offer(obj);
-                printVehicleAddedMsg("Ground",obj,availableSlotsInGf);
+                printVehicleAddedMsg("Ground", obj, availableSlotsInGf);
                 vehicleParked = true;
-            } else if (availableSlotsInGf > 0 && (numOfMotorbikesCurrentlyParkedInGF%3 != 0)){
+            } else if (availableSlotsInGf > 0 && (numOfMotorbikesCurrentlyParkedInGF % 3 != 0)) {
                 listOfVehicle.add(obj);
                 vehiclesInGF.offer(obj);
-                printVehicleAddedMsg("Ground",obj,availableSlotsInGf);
+                printVehicleAddedMsg("Ground", obj, availableSlotsInGf);
                 vehicleParked = true;
-            } else if (availableSlotsInFf == 0 || (numOfMotorbikesCurrentlyParkedInFF%3 != 0)){
+            } else if (availableSlotsInFf == 0 || (numOfMotorbikesCurrentlyParkedInFF % 3 != 0)) {
                 listOfVehicle.add(obj);
                 vehiclesInFF.offer(obj);
-                printVehicleAddedMsg("First",obj,availableSlotsInFf);
+                printVehicleAddedMsg("First", obj, availableSlotsInFf);
                 vehicleParked = true;
-            } else if (availableSlotsInFf > 0 && (numOfMotorbikesCurrentlyParkedInFF%3 == 0)){
+            } else if (availableSlotsInFf > 0 && (numOfMotorbikesCurrentlyParkedInFF % 3 == 0)) {
                 listOfVehicle.add(obj);
                 availableSlotsInFf--;
                 vehiclesInFF.offer(obj);
-                printVehicleAddedMsg("First",obj,availableSlotsInFf);
+                printVehicleAddedMsg("First", obj, availableSlotsInFf);
                 vehicleParked = true;
-            } else if (availableSlotsInFf > 0 && (numOfMotorbikesCurrentlyParkedInFF%3 != 0)){
+            } else if (availableSlotsInFf > 0 && (numOfMotorbikesCurrentlyParkedInFF % 3 != 0)) {
                 listOfVehicle.add(obj);
                 vehiclesInFF.offer(obj);
-                printVehicleAddedMsg("First",obj,availableSlotsInFf);
+                printVehicleAddedMsg("First", obj, availableSlotsInFf);
                 vehicleParked = true;
             }
         }
 
-        if (vehicleParked){
-            System.out.println("****************************");
+        if (vehicleParked) {
+            System.out.println("******************************************************");
         }
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         notifyAll();
 
         // Check whether there is sufficient space available for any vehicle to park
+        // -- below is used for console application
         /*if (availableSlotsInFf > 0 && availableSlots <= totalAvailableSlots) {
             if (obj instanceof Van) {
                 if (availableSlots >= 2) {
@@ -273,7 +336,7 @@ public class BambaCarParkManager implements CarParkManager {
     // endregion
 
 
-    public synchronized void removeVehicle(String floorLevel){
+    public synchronized void removeVehicle(String floorLevel) {
 
         boolean vehicleRemoved = false;
         int totalAvailableSlotsInAllFloors = availableSlotsInGf + availableSlotsInFf + availableSlotsInSf;
@@ -282,9 +345,9 @@ public class BambaCarParkManager implements CarParkManager {
         int bikeListIndex = 0;
         String removedVehicleID = "";
 
-        while (totalAvailableSlotsInAllFloors == TOTAL_SLOTS){
+        while (totalAvailableSlotsInAllFloors == TOTAL_SLOTS) {
             try {
-                //if there are no vehicles parked in any of the slots, then exit thread has to wait
+                //if there are no vehicles parked in any of the slots, then departure thread has to wait
                 wait(1000);
             } catch (InterruptedException e) {
                 e.printStackTrace();
@@ -292,29 +355,29 @@ public class BambaCarParkManager implements CarParkManager {
         }
 
         //remove vehicles from the ground floor
-        if (floorLevel.equals("Ground") && (availableSlotsInGf < TOTAL_SLOTS_IN_GF)){
+        if (floorLevel.equals("Ground") && (availableSlotsInGf < TOTAL_SLOTS_IN_GF)) {
             Vehicle vehicleToBeRemoved = vehiclesInGF.peek();
             removedVehicleID = vehicleToBeRemoved.getIdPlate();
 
-            if (vehicleToBeRemoved instanceof Car){
+            if (vehicleToBeRemoved instanceof Car) {
                 availableSlotsInGf++;
-                printVehicleRemovedMsg("Ground",vehicleToBeRemoved,availableSlotsInGf);
+                printVehicleRemovedMsg("Ground", vehicleToBeRemoved, availableSlotsInGf);
                 vehiclesInGF.poll();
                 vehicleRemoved = true;
             }
-            if (vehicleToBeRemoved instanceof Van){
-                availableSlotsInGf +=2;
-                printVehicleRemovedMsg("Ground",vehicleToBeRemoved,availableSlotsInGf);
+            if (vehicleToBeRemoved instanceof Van) {
+                availableSlotsInGf += 2;
+                printVehicleRemovedMsg("Ground", vehicleToBeRemoved, availableSlotsInGf);
                 vehiclesInGF.poll();
                 vehicleRemoved = true;
             }
-            if (vehicleToBeRemoved instanceof MotorBike){
+            if (vehicleToBeRemoved instanceof MotorBike) {
                 for (Vehicle item : listOfVehicle) {
                     if (item instanceof MotorBike) {
                         numOfMotorbikesCurrentlyParked++;
                     }
                 }
-                if (((numOfMotorbikesCurrentlyParked-1)%3) == 0) {
+                if (((numOfMotorbikesCurrentlyParked - 1) % 3) == 0) {
                     availableSlotsInGf++;
                     printVehicleRemovedMsg("Ground", vehicleToBeRemoved, availableSlotsInGf);
                     vehiclesInGF.poll();
@@ -324,29 +387,29 @@ public class BambaCarParkManager implements CarParkManager {
         }
 
         //remove vehicles from the First floor
-        if (floorLevel.equals("First") && (availableSlotsInFf < TOTAL_SLOTS_IN_FF)){
+        if (floorLevel.equals("First") && (availableSlotsInFf < TOTAL_SLOTS_IN_FF)) {
             Vehicle vehicleToBeRemoved = vehiclesInFF.peek();
             removedVehicleID = vehicleToBeRemoved.getIdPlate();
 
-            if (vehicleToBeRemoved instanceof Car){
+            if (vehicleToBeRemoved instanceof Car) {
                 availableSlotsInFf++;
-                printVehicleRemovedMsg("First",vehicleToBeRemoved,availableSlotsInFf);
+                printVehicleRemovedMsg("First", vehicleToBeRemoved, availableSlotsInFf);
                 vehiclesInFF.poll();
                 vehicleRemoved = true;
             }
-            if (vehicleToBeRemoved instanceof Van){
-                availableSlotsInFf +=2;
-                printVehicleRemovedMsg("First",vehicleToBeRemoved,availableSlotsInFf);
+            if (vehicleToBeRemoved instanceof Van) {
+                availableSlotsInFf += 2;
+                printVehicleRemovedMsg("First", vehicleToBeRemoved, availableSlotsInFf);
                 vehiclesInFF.poll();
                 vehicleRemoved = true;
             }
-            if (vehicleToBeRemoved instanceof MotorBike){
+            if (vehicleToBeRemoved instanceof MotorBike) {
                 for (Vehicle item : listOfVehicle) {
                     if (item instanceof MotorBike) {
                         numOfMotorbikesCurrentlyParked++;
                     }
                 }
-                if (((numOfMotorbikesCurrentlyParked-1)%3) == 0) {
+                if (((numOfMotorbikesCurrentlyParked - 1) % 3) == 0) {
                     availableSlotsInFf++;
                     printVehicleRemovedMsg("First", vehicleToBeRemoved, availableSlotsInFf);
                     vehiclesInFF.poll();
@@ -356,34 +419,34 @@ public class BambaCarParkManager implements CarParkManager {
         }
 
         //remove vehicles from the Second floor
-        if (floorLevel.equals("Second") && (availableSlotsInFf < TOTAL_SLOTS_IN_FF)){
+        if (floorLevel.equals("Second") && (availableSlotsInSf < TOTAL_SLOTS_IN_SF)) {
             Vehicle vehicleToBeRemoved = vehiclesInSF.peek();
             removedVehicleID = vehicleToBeRemoved.getIdPlate();
 
-            if (vehicleToBeRemoved instanceof Car){
-                availableSlotsInFf++;
-                printVehicleRemovedMsg("Second",vehicleToBeRemoved,availableSlotsInFf);
-                vehiclesInFF.poll();
+            if (vehicleToBeRemoved instanceof Car) {
+                availableSlotsInSf++;
+                printVehicleRemovedMsg("Second", vehicleToBeRemoved, availableSlotsInSf);
+                vehiclesInSF.poll();
                 vehicleRemoved = true;
             }
-            if (vehicleToBeRemoved instanceof Van){
-                availableSlotsInFf +=2;
-                printVehicleRemovedMsg("Second",vehicleToBeRemoved,availableSlotsInFf);
-                vehiclesInFF.poll();
+            if (vehicleToBeRemoved instanceof Van) {
+                availableSlotsInSf += 2;
+                printVehicleRemovedMsg("Second", vehicleToBeRemoved, availableSlotsInSf);
+                vehiclesInSF.poll();
                 vehicleRemoved = true;
             }
         }
 
-        if (vehicleRemoved){
+        if (vehicleRemoved) {
             removeVehicleFromList(removedVehicleID);
             System.out.println("****************************");
         }
 
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
+//        try {
+//            Thread.sleep(1000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
         notifyAll();
     }
 
@@ -435,7 +498,7 @@ public class BambaCarParkManager implements CarParkManager {
                     break;
                 }
             }
-            listIndex ++;
+            listIndex++;
         }
 
         if (!vehicleFound) {
@@ -671,37 +734,37 @@ public class BambaCarParkManager implements CarParkManager {
         }
     }
 
-    public void printVehicleAddedMsg(String floor, Vehicle vehicle, int slotsRem){
-        if (floor.equals("Ground")){
-            System.out.println("Vehicle number : "+ vehicle.getIdPlate() + " is parked in the Ground floor.");
+    public void printVehicleAddedMsg(String floor, Vehicle vehicle, int slotsRem) {
+        if (floor.equals("Ground")) {
+            System.out.println("Vehicle number : " + vehicle.getIdPlate() + " is parked in the Ground floor.");
             System.out.println("Remaining slots in the Ground floor : " + slotsRem);
-        } else if (floor.equals("First")){
-            System.out.println("Vehicle number : "+ vehicle.getIdPlate() + " is parked in the First floor.");
+        } else if (floor.equals("First")) {
+            System.out.println("Vehicle number : " + vehicle.getIdPlate() + " is parked in the First floor.");
             System.out.println("Remaining slots in the First floor : " + slotsRem);
-        } else if (floor.equals("Second")){
-            System.out.println("Vehicle number : "+ vehicle.getIdPlate() + " is parked in the Second floor.");
+        } else if (floor.equals("Second")) {
+            System.out.println("Vehicle number : " + vehicle.getIdPlate() + " is parked in the Second floor.");
             System.out.println("Remaining slots in the Second floor : " + slotsRem);
         }
     }
 
-    public void printVehicleRemovedMsg(String floor, Vehicle vehicle, int slotsRem){
-        if (floor.equals("Ground")){
-            System.out.println("Vehicle number : "+ vehicle.getIdPlate() + " is removed from the Ground floor.");
+    public void printVehicleRemovedMsg(String floor, Vehicle vehicle, int slotsRem) {
+        if (floor.equals("Ground")) {
+            System.out.println("Vehicle number : " + vehicle.getIdPlate() + " is removed from the Ground floor.");
             System.out.println("Remaining slots in the Ground floor : " + slotsRem);
-        } else if (floor.equals("First")){
-            System.out.println("Vehicle number : "+ vehicle.getIdPlate() + " is removed from the First floor.");
+        } else if (floor.equals("First")) {
+            System.out.println("Vehicle number : " + vehicle.getIdPlate() + " is removed from the First floor.");
             System.out.println("Remaining slots in the First floor : " + slotsRem);
-        } else if (floor.equals("Second")){
-            System.out.println("Vehicle number : "+ vehicle.getIdPlate() + " is removed from the Second floor.");
+        } else if (floor.equals("Second")) {
+            System.out.println("Vehicle number : " + vehicle.getIdPlate() + " is removed from the Second floor.");
             System.out.println("Remaining slots in the Second floor : " + slotsRem);
         }
     }
 
-    public void removeVehicleFromList(String vehicleID){
+    public void removeVehicleFromList(String vehicleID) {
         int vehicleListIndex = 0;
 
         for (Vehicle item : listOfVehicle) {
-            if ( item.getIdPlate().equals(vehicleID) ){
+            if (item.getIdPlate().equals(vehicleID)) {
                 listOfVehicle.remove(vehicleListIndex);
                 break;
             }
@@ -709,15 +772,31 @@ public class BambaCarParkManager implements CarParkManager {
         }
     }
 
-    public Queue<Vehicle> getCarQueue(){
+    public Queue<Vehicle> getCarQueue() {
         return carQueue;
     }
 
-    public Queue<Vehicle> getVanQueue(){
+    public Queue<Vehicle> getVanQueue() {
         return vanQueue;
     }
 
-    public Queue<Vehicle> getMotorbikeQueue(){
+    public Queue<Vehicle> getMotorbikeQueue() {
         return motorbikeQueue;
+    }
+
+    public void fillAllSlotsInGroundFloor(int availableSlots) {
+        this.availableSlotsInGf = availableSlots;
+    }
+
+    public void assignVehiclesInGroundFloor(Queue<Vehicle> vehiclesParked) {
+        this.vehiclesInGF = vehiclesParked;
+    }
+
+    public void fillAllSlotsInFirstFloor(int availableSlots) {
+        this.availableSlotsInFf = availableSlots;
+    }
+
+    public void assignVehiclesInFirstFloor(Queue<Vehicle> vehiclesParked) {
+        this.vehiclesInFF = vehiclesParked;
     }
 }

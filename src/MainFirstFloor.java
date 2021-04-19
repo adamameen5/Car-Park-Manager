@@ -3,24 +3,43 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Main {
+public class MainFirstFloor {
 
     private static BambaCarParkManager bambaCarParkManager = BambaCarParkManager.getInstance();
 
+
+    /*
+     * This main method will be executed to test the scenario when the ground floor is full
+     * Therefore, for a vehicle to enter the car park, it should either go to the first floor or wait for a vehicle to be
+     * removed from the ground floor to enter the ground floor
+     */
     public static void main(String[] args) {
 
-        //while starting the application, the queues will be empty
-//        Queue<Vehicle> carQueue = bambaCarParkManager.getCarQueue();
-//        Queue<Vehicle> vanQueue = bambaCarParkManager.getVanQueue();
-//        Queue<Vehicle> motorbikeQueue = bambaCarParkManager.getMotorbikeQueue();
+        //before filling vehicles to the first floor, there should be no empty slots in the ground floor
+        //which means available slots in ground floor should be zero
+        bambaCarParkManager.fillAllSlotsInGroundFloor(0);
 
-        //Vehicles list for Ground Floor
+        //Get current system date and time
+        DateTime dateTime = new DateTime(2020,3,20,10,10,10);
+
+        //In-order to have no empty slots in the ground floor, we can fill the slots in ground floor
+        //with cars, just for an example
+        Queue<Vehicle> vehiclesParkedInGFQueue = new LinkedList<Vehicle>();
+        for (int i=0 ; i< 80 ; i++){
+            Car carObj = new Car("car-Parked "+i,"Honda","Fit",dateTime,4, Color.BLUE);
+            vehiclesParkedInGFQueue.offer(carObj);
+        }
+        bambaCarParkManager.assignVehiclesInGroundFloor(vehiclesParkedInGFQueue);
+
+        /* Now we can create vehicle objects to be added to the car park when running this main method, first the
+        vehicles assigned to the first floor thread will be added to a slot bcs the ground floor is full. The program
+        will then wait until the ground floor vehicles leave to add a vehicle to the ground floor */
+
+        //Vehicles list for Ground Floor to add vehicle objects
         Queue<Vehicle> carQueueGF = new LinkedList<Vehicle>();
         Queue<Vehicle> vanQueueGF = new LinkedList<Vehicle>();
         Queue<Vehicle> motorbikeQueueGF = new LinkedList<Vehicle>();
 
-        //Get current system date and time
-        DateTime dateTime = new DateTime(2020,3,20,10,10,10);
 
         //Creating car objects and adding them to the queue to be parked in the ground floor
         Car car1 = new Car("car-gf1","Honda","Fit",dateTime,4, Color.BLUE);
@@ -83,10 +102,31 @@ public class Main {
 
 
         //Vehicles list for first Floor
-        //--this test will have zero vehicles to be parked in the first floor
         Queue<Vehicle> carQueueFF = new LinkedList<Vehicle>();
         Queue<Vehicle> vanQueueFF = new LinkedList<Vehicle>();
         Queue<Vehicle> motorbikeQueueFF = new LinkedList<Vehicle>();
+
+        //Creating car objects and adding them to the queue to be parked in the first floor
+        Car car6 = new Car("car-ff1","Honda","Fit",dateTime,4, Color.BLUE);
+        Car car7 = new Car("car-ff2","Toyota","Camry",dateTime,4, Color.CYAN);
+        Car car8 = new Car("car-ff3","Benz","MG",dateTime,4, Color.DARK_GRAY);
+        carQueueFF.offer(car6);
+        carQueueFF.offer(car7);
+        carQueueFF.offer(car8);
+
+        //Creating van objects and adding them to the queue to be parked in the first floor
+        Van van7 = new Van("van-ff1","Toyota","KDH",dateTime,30.0);
+        Van van8 = new Van("van-ff2","Nissan","KMKH",dateTime,60.0);
+        Van van9 = new Van("van-ff3","Nissan","KMKH",dateTime,60.0);
+        vanQueueFF.offer(van7);
+        vanQueueFF.offer(van8);
+        vanQueueFF.offer(van9);
+
+        //Creating motorbike objects and adding them to the queue to be parked in the first floor
+        MotorBike mbk3 = new MotorBike("mbk-ff1","Yamaha","FZ",dateTime,"500cc");
+        MotorBike mbk4 = new MotorBike("mbk-ff2","Honda","Dio",dateTime,"110cc");
+        motorbikeQueueFF.offer(mbk3);
+        motorbikeQueueFF.offer(mbk4);
 
         //Creating the threads for first floor (entry and exit) gates
         Runnable ffArrival = new Arrival(bambaCarParkManager,"First",carQueueFF,vanQueueFF,motorbikeQueueFF);

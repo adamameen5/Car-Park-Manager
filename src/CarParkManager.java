@@ -25,4 +25,8 @@ public interface CarParkManager {
 	public Queue<Vehicle> getCarQueue();
 	public Queue<Vehicle> getVanQueue();
 	public Queue<Vehicle> getMotorbikeQueue();
+	public void fillAllSlotsInGroundFloor( int availableSlots);
+	public void assignVehiclesInGroundFloor(Queue<Vehicle> vehiclesParked);
+	public void fillAllSlotsInFirstFloor( int availableSlots);
+	public void assignVehiclesInFirstFloor(Queue<Vehicle> vehiclesParked);
 }
