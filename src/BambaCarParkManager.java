@@ -439,7 +439,7 @@ public class BambaCarParkManager implements CarParkManager {
 
         if (vehicleRemoved) {
             removeVehicleFromList(removedVehicleID);
-            System.out.println("****************************");
+            System.out.println("******************************************************");
         }
 
 //        try {

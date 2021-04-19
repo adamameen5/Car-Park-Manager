@@ -3,16 +3,11 @@ import java.awt.*;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class Main {
+public class MainGroundFloor {
 
     private static BambaCarParkManager bambaCarParkManager = BambaCarParkManager.getInstance();
 
     public static void main(String[] args) {
-
-        //while starting the application, the queues will be empty
-//        Queue<Vehicle> carQueue = bambaCarParkManager.getCarQueue();
-//        Queue<Vehicle> vanQueue = bambaCarParkManager.getVanQueue();
-//        Queue<Vehicle> motorbikeQueue = bambaCarParkManager.getMotorbikeQueue();
 
         //Vehicles list for Ground Floor
         Queue<Vehicle> carQueueGF = new LinkedList<Vehicle>();
